@@ -40,7 +40,7 @@ def noo_random_matrix(size):
     if not isinstance(size, tuple):
         raise TypeError('size must be tuple.')
     dim = size[0]*size[1]
-    numberOfOnes = np.random.randint(0, dim)
+    numberOfOnes = np.random.randint(0, dim+1)
     onesArray = np.array([1]*numberOfOnes+[0]*(dim-numberOfOnes))
     np.random.shuffle(onesArray)
     W2 = onesArray.reshape(size[0], size[1])
