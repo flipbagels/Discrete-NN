@@ -1,1 +1,1 @@
-__all__ = ['BoolFunc', 'ParameterAssignment', 'SOPfunctions']
+__all__ = ['BoolFunc', 'ParameterAssignment', 'SOPfunctions', 'NNfunctions', 'RobustnessFunctions']

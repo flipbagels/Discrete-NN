@@ -3,7 +3,9 @@ from sympy.logic import SOPform, boolalg
 from sympy import symbols, srepr, Not
 import re
 from . import SOPfunctions as SOPf  # Dot notation as Python imports 'as' commands as relative imports
-from . import ParameterAssignment as PA 
+from . import ParameterAssignment as PA
+from . import NNfunctions as NNf
+from . import RobustnessFunctions as RF
 
 class BoolFunc():
     def __init__(self, parameters=None, n=3, parameterType=0):
@@ -16,9 +18,6 @@ class BoolFunc():
         self.n = n   # input size
         self.parameterType = parameterType
         self.assign_parameters(parameters)
-            
-    def relu(self, x):
-        return x * (x>0)
     
     def get_parameters(self):
         return self.parameters
@@ -34,12 +33,7 @@ class BoolFunc():
         print(f'Neural network changed to type {x}')
     
     def forward(self, x):
-        W1, b1, W2, b2 = self.parameters
-        x = W1@x + b1
-        x = self.relu(x)
-        x = W2@x + b2
-        x = self.relu(x)
-        return x
+        return NNf.forward_pass(self.parameters, x)
     
     def update_D(self):
         if self.parameterType == 0:
@@ -68,7 +62,12 @@ class BoolFunc():
         if self.parameterType == 1 or self.parameterType == 2 or self.parameterType == 3:
             parameters = self.get_parameters()
             return SOPf.function_SOP(parameters, self.n)
-                            
+        
+    def get_truth_table(self):
+        return RF.truth_table(self.parameters)    
+
+    def get_robustness(self):
+        return RF.robustness(self.parameters)
     
     def assign_parameters(self, parameters=None):
         if parameters is None:
