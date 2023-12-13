@@ -67,7 +67,7 @@ class BoolFunc():
         return RF.truth_table(self.parameters)    
 
     def get_robustness(self):
-        return RF.robustness(self.parameters)
+        return RF.robustness(self.parameters, self.parameterType)
     
     def assign_parameters(self, parameters=None):
         if parameters is None:
@@ -84,7 +84,7 @@ class BoolFunc():
         if self.parameterType == 1:
             W1 = PA.uniform_matrix((2**(self.n-1), self.n))
             b1 = PA.assign_b1_from_W1(W1)
-            W2 = PA.assign_W2_from_W1(W1)
+            W2 = PA.uniform_matrix((1,2**(self.n-1)))
             b2 = PA.zero_or_one()
 
             if b2 == 1:
