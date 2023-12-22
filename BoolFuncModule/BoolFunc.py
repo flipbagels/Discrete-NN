@@ -13,7 +13,7 @@ class BoolFunc():
             self.parameters = ()
         if not isinstance(n, int):
             raise TypeError('n must be an int.')
-        if not isinstance(parameterType, int) or n >= 4:
+        if not isinstance(parameterType, int) or n >= 5:
             raise Exception('parameterType must be an integer between 0 and 3')
         self.n = n   # input size
         self.parameterType = parameterType
@@ -26,7 +26,7 @@ class BoolFunc():
         return self.parameterType
     
     def change_parameter_type(self, x):
-        if x >= 4:
+        if x >= 5:
             raise Exception('param_type must be a number between 0 and 3.')
         self.parameterType = x
         self.assign_parameters()
@@ -39,19 +39,12 @@ class BoolFunc():
         if self.parameterType == 0:
             raise Exception('Not supported yet.')
         
-        if self.parameterType == 1:
-            parameters = self.get_parameters()
-            functionSOP = SOPf.function_SOP(parameters, self.n)
-            literalsCount, clausesCount = SOPf.literals_clauses_count(functionSOP, self.n)
-            self.D = literalsCount
-        
-        if self.parameterType == 2 or self.parameterType == 3:    
+        if self.parameterType != 0:    
             parameters = self.get_parameters()
             functionSOP = SOPf.function_SOP(parameters, self.n)
             literalsCount, clausesCount = SOPf.literals_clauses_count(functionSOP, self.n)
             self.D = literalsCount + clausesCount
             
-        
     def get_D(self):
         return self.D
     
@@ -59,12 +52,12 @@ class BoolFunc():
         if self.parameterType == 0:
             raise Exception('Not supported yet.')
         
-        if self.parameterType == 1 or self.parameterType == 2 or self.parameterType == 3:
+        if self.parameterType != 0:
             parameters = self.get_parameters()
             return SOPf.function_SOP(parameters, self.n)
         
     def get_truth_table(self):
-        return RF.truth_table(self.parameters)    
+        return NNf.truth_table(self.parameters)    
 
     def get_robustness(self):
         return RF.robustness(self.parameters, self.parameterType)
@@ -109,6 +102,18 @@ class BoolFunc():
             W1 = PA.uniform_matrix((2**(self.n-1), self.n))
             b1 = PA.assign_b1_from_W1(W1)
             W2 = PA.uniform_matrix((1,2**(self.n-1)), positive=True)
+            b2 = PA.zero_or_one()
+
+            if b2 == 1:
+                W2 = -W2
+            
+            self.parameters = (W1, b1, W2, b2)
+            self.update_D()
+
+        if self.parameterType == 4:
+            W1 = PA.uniform_matrix((2**(self.n-1), self.n))
+            b1 = PA.uniform_matrix((2**(self.n-1), 1))
+            W2 = PA.uniform_matrix((1, 2**(self.n-1)))
             b2 = PA.zero_or_one()
 
             if b2 == 1:
