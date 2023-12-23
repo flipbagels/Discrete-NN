@@ -6,6 +6,7 @@ from . import NNfunctions as NNf
 
 
 def literals_clauses_count(functionSOP, n_input):
+    # Finds the minimum number of literals or clauses required to represent the function in either SOP or POS form.
     force = False if n_input < 8 else True
     conjugateFunctionSOP = boolalg.to_dnf(Not(functionSOP), simplify=True, force=force)
     sfunctionSOP = srepr(functionSOP)
@@ -40,22 +41,15 @@ def literals_clauses_count(functionSOP, n_input):
             return conjugateLiteralsCount, conjugateClausesCount
     
 
-def function_SOP(parameters, n_input):
-    W1, b1, W2, b2 = parameters
-    truthTable = NNf.truth_table(parameters)
+def function_SOP(truthTable, n_input):
+    truthTable = truthTable
     symbolsList = [symbols(f'{i}') for i in range(n_input)]
     minterms = []
     for i, val in enumerate(truthTable):
         if val == '1':
             minterms.append(list(map(int, NNf.binary(i, length=n_input))))
 
-    if b2 == 0:
-        return SOPform(symbolsList, minterms)
-    elif b2 == 1:
-        force = False if n_input < 8 else True
-        return boolalg.to_dnf(Not(SOPform(symbolsList, minterms)), simplify=True, force=force)
-    else:
-        raise Exception('b2 has no valid value, must be 0 or 1.')
+    return SOPform(symbolsList, minterms)
 
 
 # def function_SOP(parameters, n_input):

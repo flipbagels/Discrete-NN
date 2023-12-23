@@ -8,7 +8,7 @@ from . import NNfunctions as NNf
 from . import RobustnessFunctions as RF
 
 class BoolFunc():
-    def __init__(self, parameters=None, n=3, parameterType=0):
+    def __init__(self, parameters=None, n=3, parameterType=0, bool_update_D=True):
         if parameters is None:
             self.parameters = ()
         if not isinstance(n, int):
@@ -17,7 +17,7 @@ class BoolFunc():
             raise Exception('parameterType must be an integer between 0 and 3')
         self.n = n   # input size
         self.parameterType = parameterType
-        self.assign_parameters(parameters)
+        self.assign_parameters(parameters, bool_update_D)
     
     def get_parameters(self):
         return self.parameters
@@ -40,8 +40,8 @@ class BoolFunc():
             raise Exception('Not supported yet.')
         
         if self.parameterType != 0:    
-            parameters = self.get_parameters()
-            functionSOP = SOPf.function_SOP(parameters, self.n)
+            truthTable = self.get_truth_table()
+            functionSOP = SOPf.function_SOP(truthTable, self.n)
             literalsCount, clausesCount = SOPf.literals_clauses_count(functionSOP, self.n)
             self.D = literalsCount + clausesCount
             
@@ -53,8 +53,8 @@ class BoolFunc():
             raise Exception('Not supported yet.')
         
         if self.parameterType != 0:
-            parameters = self.get_parameters()
-            return SOPf.function_SOP(parameters, self.n)
+            truthTable = self.get_truth_table()
+            return SOPf.function_SOP(truthTable, self.n)
         
     def get_truth_table(self):
         return NNf.truth_table(self.parameters)    
@@ -62,7 +62,7 @@ class BoolFunc():
     def get_robustness(self):
         return RF.robustness(self.parameters, self.parameterType)
     
-    def assign_parameters(self, parameters=None):
+    def assign_parameters(self, parameters=None, bool_update_D=True):
         if parameters is None:
             parameters = ()
 
@@ -72,7 +72,10 @@ class BoolFunc():
             elif len(parameters) == 0:
                 raise Exception('No hyperparameters given in argument.')
             self.parameters = parameters
-            self.update_D()
+            if bool_update_D:
+                self.update_D()
+            else:
+                self.D = None
     
         if self.parameterType == 1:
             W1 = PA.uniform_matrix((2**(self.n-1), self.n))
@@ -84,7 +87,10 @@ class BoolFunc():
                 W2 = -W2
 
             self.parameters = (W1, b1, W2, b2)
-            self.update_D()
+            if bool_update_D:
+                self.update_D()
+            else:
+                self.D = None
             
         if self.parameterType == 2:
             W1 = PA.uniform_matrix((2**(self.n-1), self.n))
@@ -96,7 +102,10 @@ class BoolFunc():
                 W2 = -W2
 
             self.parameters = (W1, b1, W2, b2)
-            self.update_D()
+            if bool_update_D:
+                self.update_D()
+            else:
+                self.D = None
             
         if self.parameterType == 3:
             W1 = PA.uniform_matrix((2**(self.n-1), self.n))
@@ -108,7 +117,10 @@ class BoolFunc():
                 W2 = -W2
             
             self.parameters = (W1, b1, W2, b2)
-            self.update_D()
+            if bool_update_D:
+                self.update_D()
+            else:
+                self.D = None
 
         if self.parameterType == 4:
             W1 = PA.uniform_matrix((2**(self.n-1), self.n))
@@ -120,4 +132,7 @@ class BoolFunc():
                 W2 = -W2
             
             self.parameters = (W1, b1, W2, b2)
-            self.update_D()
+            if bool_update_D:
+                self.update_D()
+            else:
+                self.D = None
